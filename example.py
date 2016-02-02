@@ -11,11 +11,9 @@ rocker.set_important_parameters(max_speed=1000,
                                 standbycurrent=10,
                                 microstep_resolution=4)
 
-rocker.get_globals()
-rocker.get_parameters()
+#rocker.get_globals()
+#rocker.get_parameters()
 
 rocker.rotate(10., steps=24)
 time.sleep(10)
 rocker.stop()
-
-

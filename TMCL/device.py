@@ -10,8 +10,8 @@ from error import *
 class Device(object):
     """Abstraction of a Device that understands TMCL via a serial port"""
 
-    def __init__(self, port="/dev/ttyACM0", debug=False,
-                 num_motors=3, num_banks=4, max_output=(4, 3, 5),
+    def __init__(self, port="/dev/ttyUSB0", debug=False,
+                 num_motors=1, num_banks=4, max_output=(4, 3, 5),
                  max_velocity=2048, max_coordinate=21, max_position=2**23):
         self._port = port
         self._debug = debug
@@ -537,4 +537,3 @@ class Device(object):
         Not yet implemented
         """
         raise NotImplementedError("yet!")
-

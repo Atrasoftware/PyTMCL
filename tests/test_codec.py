@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-import codec
+import TMCL.codec as codec
 
 import random as rnd
 
@@ -245,11 +245,5 @@ class CodecTestCase(unittest.TestCase):
             self.assertEqual(string,      new_string)
 
 
-
-
-
-
 if __name__ == '__main__':
     unittest.main()
-
-
