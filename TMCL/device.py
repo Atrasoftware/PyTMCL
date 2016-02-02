@@ -1,10 +1,9 @@
 
 import serial
 
-import codec
-from consts import *
-from error import *
-
+from  .codec import *
+from .consts import *
+from .error import *
 
 
 class Device(object):
@@ -27,13 +26,13 @@ class Device(object):
         """Encode and send a query. Recieve, decode, and return reply"""
         req = codec.encodeRequestCommand(*request)
         if self._debug:
-            print "send to TMCL: ", codec.hexString(req), codec.decodeRequestCommand(req)
+            print("send to TMCL: ", codec.hexString(req), codec.decodeRequestCommand(req))
         self._ser.write(req)
         rep = codec.decodeReplyCommand(self._ser.read(9))
         if self._debug:
             tmp = rep.values()[:-1]
             tmp = codec.encodeReplyCommand(*tmp)
-            print "got from TMCL:", codec.hexString(tmp), rep
+            print("got from TMCL:", codec.hexString(tmp), rep)
         return rep['status'], rep['value']
 
     def _pn_checkrange(self, parameter_number, value, prefix):

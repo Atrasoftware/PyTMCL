@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-import TMCL.codec as codec
-
+from  TMCL import *
 import random as rnd
 
 
@@ -19,7 +18,7 @@ class CodecTestCase(unittest.TestCase):
         return rnd.randint(min_i, max_i-1)
 
     def _gen_bytes(self, length=5):
-        return [self._gen_byte() for _ in xrange(length)]
+        return [self._gen_byte() for _ in range(length)]
 
     def _gen_pos_bytes(self, length=5):
         return [self._gen_byte(max_i=128)] + self._gen_bytes(length-1)
@@ -30,13 +29,13 @@ class CodecTestCase(unittest.TestCase):
     def _gen_number(self, length=None):
         if length is None:
             length = rnd.randint(1, 9)
-        value = [rnd.randint(0, 9) for _ in xrange(length)]
+        value = [rnd.randint(0, 9) for _ in range(length)]
         value = (str(s) for s in value)
         value = "".join(value)
         return int(value)
 
     def _gen_cmd_string(self, length=8):
-        values = [rnd.randint(0, 9) for _ in xrange(length)]
+        values = [rnd.randint(0, 9) for _ in range(length)]
         chksum = sum(values)
         values.append(chksum)
         string = "".join(chr(v) for v in values)
@@ -45,12 +44,12 @@ class CodecTestCase(unittest.TestCase):
 
 
     def test_byte(self):
-        for i in xrange(MAXITER):
+        for i in range(MAXITER):
             self.assertIn(codec.byte(i), range(256))
 
 
     def test_checksum(self):
-        for i in xrange(MAXITER):
+        for i in range(MAXITER):
             self.assertEqual(codec.checksum(i*[i]), codec.byte(i*i))
 
 
@@ -76,7 +75,7 @@ class CodecTestCase(unittest.TestCase):
 
 
     def test_encdecBytes(self):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             value = self._gen_number()
             bytes = codec.encodeBytes(value)
             new_value = codec.decodeBytes(bytes)
@@ -85,7 +84,7 @@ class CodecTestCase(unittest.TestCase):
 
 
     def test_decencBytes(self):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             bytes = self._gen_bytes(length=4)
             value = codec.decodeBytes(bytes)
             new_bytes = codec.encodeBytes(value)
@@ -94,7 +93,7 @@ class CodecTestCase(unittest.TestCase):
 
 
     def test_decencNegBytes(self):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             bytes = self._gen_neg_bytes(length=4)
             value = codec.decodeBytes(bytes)
             new_bytes = codec.encodeBytes(value)
@@ -103,7 +102,7 @@ class CodecTestCase(unittest.TestCase):
 
 
     def test_decencPosBytes(self):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             bytes = self._gen_pos_bytes(length=4)
             value = codec.decodeBytes(bytes)
             new_bytes = codec.encodeBytes(value)
@@ -149,10 +148,14 @@ class CodecTestCase(unittest.TestCase):
 
 
     def _help_test_encdecReAllCommand(self, encoder, decoder, keys):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             values = self._gen_bytes(length=len(keys))
             string = encoder(*values)
+            #print("DIO PUTTANA\n\n")
+            #print(len(values))
+            #print(string)
             result = decoder(string)
+            #print("DIO PUTTANA")
 
             for i, k in enumerate(keys):
                 self.assertEqual(values[i], result[k])
@@ -161,7 +164,7 @@ class CodecTestCase(unittest.TestCase):
 
 
     def _help_test_decencReALLCommand(self, encoder, decoder, keys):
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             string = self._gen_cmd_string()
             values = decoder(string)
 
@@ -214,7 +217,7 @@ class CodecTestCase(unittest.TestCase):
 
     def test_encdecCommand(self):
         keys = range(4)
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             params = self._gen_bytes(length=4)
             values = self._gen_byte()
             chksum = sum(params, values) % 256
@@ -231,7 +234,7 @@ class CodecTestCase(unittest.TestCase):
 
     def test_decencCommand(self):
         keys = range(4)
-        for _ in xrange(MAXITER):
+        for _ in range(MAXITER):
             string = self._gen_cmd_string()
 
             decoded = codec.decodeCommand(string, keys)

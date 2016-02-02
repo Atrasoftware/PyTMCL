@@ -1,14 +1,12 @@
 
 from collections import OrderedDict
 
-from error import *
 
+from .error import *
 
 COMMAND_STRING_LENGTH = 9
 REQUEST_KEYS = ['module-address', 'command-number', 'type-number', 'motor-number']
 REPLY_KEYS = ['reply-address', 'module-address', 'status', 'command-number']
-
-
 
 def byte(n):
     """Convert n to byte in range(256)"""
@@ -30,7 +28,7 @@ def encodeBytes(value, num_bytes=4):
     if value < 0:
         value += max_value
 
-    return [byte(int(value) >> i*8) for i in reversed(xrange(num_bytes))]
+    return [byte(int(value) >> i*8) for i in reversed(range(num_bytes))]
 
 
 def decodeBytes(bytes):
@@ -73,7 +71,7 @@ def encodeCommand(parameters, value, debug=False):
 
     if debug:
         cmd = decodeBytes(bytes, max_i=8)
-        print "{0:0>18X}".format(cmd), result
+        print("{0:0>18X}".format(cmd), result)
     return result
 
 
@@ -94,7 +92,13 @@ def decodeCommand(cmd_string, keys):
     Do some checks on string length and checksum
     Fill dict with result according to keys
     """
-    byte_array = bytearray(cmd_string)
+    #print(cmd_string.decode())
+    #byte_array = bytearray(cmd_string,"ascii")
+    #byte_array = bytearray(cmd_string.encode())
+    byte_array = list(map(ord,cmd_string))
+    #byte_array = cmd_string
+    #print(len(byte_array))
+    #print("DIO PUTTANA")
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
@@ -115,6 +119,3 @@ def hexString(cmd):
     """Convert encoded command string to human-readable string of hex values"""
     s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]
     return  "[" + ", ".join(s) + "]"
-
-
-

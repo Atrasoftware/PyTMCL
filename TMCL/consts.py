@@ -1,3 +1,4 @@
+from itertools import chain
 
 STATUSCODES = { 100 : "Succesfully executed, no error",
                 101 : "Command loaded into TMCL program EEPROM",
@@ -25,7 +26,7 @@ COMMAND_NUMBERS = {  1 : "ROR",    2 : "ROL",    3 : "MST",
                     39 : "ACO"
                   }
 
-NUMBER_COMMANDS = {v:k for k, v in COMMAND_NUMBERS.iteritems()}
+NUMBER_COMMANDS = {v:k for k, v in COMMAND_NUMBERS.items()}
 
 INTERRUPT_VECTORS = {   0 : "Timer 0",
                         1 : "Timer 1",
@@ -144,7 +145,7 @@ AXIS_PARAMETER = {   0 : ("target position", TR_24s, T_RW),
                    214 : ("power down delay", TR_xPWR0, T_RWE)
                  }
 
-SINGLE_AXIS_PARAMETERS = [140] + range(160, 184)
+SINGLE_AXIS_PARAMETERS = chain([140], range(160, 184))
 
 GLOBAL_PARAMETER = { (0, 64)  : ("EEPROM magic", TR_8u, T_RWE),
                      (0, 65)  : ("RS485 baud rate", TR_m12, T_RWE),
@@ -170,5 +171,3 @@ GLOBAL_PARAMETER = { (0, 64)  : ("EEPROM magic", TR_8u, T_RWE),
 # add general purpose registers
 for b, p, a in zip([2]*256, range(256), ([T_RWE]*56) + ([T_RW]*200)):
     GLOBAL_PARAMETER[(2, p)] = ("general purpose reg#{0:0>3d}".format(p), TR_32s, a)
-
-
