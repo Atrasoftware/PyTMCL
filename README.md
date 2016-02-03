@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/Atrasoftware/PyTMCL.svg?branch=master)](https://travis-ci.org/Atrasoftware/PyTMCL)
 
-# PyTMCL
+# PyTMCL  [![Build Status](https://travis-ci.org/Atrasoftware/PyTMCL.svg?branch=master)](https://travis-ci.org/Atrasoftware/PyTMCL)
+
 Python TMCL Interface for generic Trinamic stepper motor drivers.
 
 
