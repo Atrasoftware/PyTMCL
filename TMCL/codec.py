@@ -95,18 +95,7 @@ def decodeCommand(cmd_string, keys):
     Fill dict with result according to keys
     """
     #byte_array = bytearray(cmd_string) #Old version working only with 2.7
-    #print(cmd_string.decode())
-    #byte_array = bytearray(cmd_string)
-    #byte_array = bytearray(cmd_string.encode('ascii','ignore'))
-    #byte_array = list(map(ord,cmd_string))
-    #byte_array = cmd_string
     byte_array = [ord(i) for i in cmd_string]
-    #byte_array = cmd_string.encode()
-    #print(bytearray(cmd_string)[0])
-    #print("".join([chr(b) for b in map(ord,cmd_string)]))
-    #print(bytearray(cmd_string.encode('','ignore')))
-    #print(byte_array)
-    #print("DIO PUTTANA")
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
@@ -120,7 +109,6 @@ def decodeCommand(cmd_string, keys):
     result['checksum'] = byte_array[8]
 
     return result
-
 
 
 def hexString(cmd):
