@@ -9,7 +9,10 @@ REQUEST_KEYS = ['module-address', 'command-number', 'type-number', 'motor-number
 REPLY_KEYS = ['reply-address', 'module-address', 'status', 'command-number']
 
 def byte(n):
-    """Convert n to byte in range(256)"""
+    """Convert n to byte in range(256)
+
+    for example byte(256) = 0, byte(255) = 255, byte(0) = 0
+    """
     return int(n) % (1<<8)
 
 
@@ -63,7 +66,7 @@ def encodeCommand(parameters, value, debug=False):
     Join everything and convert to string
     """
     bytes = [byte(p) for p in parameters]
-    value = encodeBytes(value)
+    value = encodeBytes(value) #Remember 4 number of bytes as default see TMCL reference manual section 2.1
     bytes += value
     chsum = checksum(bytes)
     bytes += [chsum]
@@ -71,9 +74,8 @@ def encodeCommand(parameters, value, debug=False):
 
     if debug:
         cmd = decodeBytes(bytes, max_i=8)
-        print("{0:0>18X}".format(cmd), result)
+        print("{0:0>18X}".format(cmd), result) #http://www.python-course.eu/python3_formatted_output.php
     return result
-
 
 
 def decodeRequestCommand(cmd_string):
@@ -92,12 +94,18 @@ def decodeCommand(cmd_string, keys):
     Do some checks on string length and checksum
     Fill dict with result according to keys
     """
+    #byte_array = bytearray(cmd_string) #Old version working only with 2.7
     #print(cmd_string.decode())
-    #byte_array = bytearray(cmd_string,"ascii")
-    #byte_array = bytearray(cmd_string.encode())
-    byte_array = list(map(ord,cmd_string))
+    #byte_array = bytearray(cmd_string)
+    #byte_array = bytearray(cmd_string.encode('ascii','ignore'))
+    #byte_array = list(map(ord,cmd_string))
     #byte_array = cmd_string
-    #print(len(byte_array))
+    byte_array = [ord(i) for i in cmd_string]
+    #byte_array = cmd_string.encode()
+    #print(bytearray(cmd_string)[0])
+    #print("".join([chr(b) for b in map(ord,cmd_string)]))
+    #print(bytearray(cmd_string.encode('','ignore')))
+    #print(byte_array)
     #print("DIO PUTTANA")
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
@@ -117,5 +125,6 @@ def decodeCommand(cmd_string, keys):
 
 def hexString(cmd):
     """Convert encoded command string to human-readable string of hex values"""
-    s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]
+    #s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]#Old version (working with 2.7)
+    s = ['{:x}'.format(i).rjust(2) for i in [ord(i) for i in cmd]]
     return  "[" + ", ".join(s) + "]"

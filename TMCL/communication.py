@@ -1,19 +1,20 @@
 
 import serial
 
-from  .codec import *
+from  . import codec
 from .consts import *
 from .error import *
 
 
-class Communication(object):
-    """Abstraction of a Communication handler that speak TMCL via serial port"""
+class TMCLCommunicator(object):
+    """Abstraction of a Communication handler that speak TMCL via serial port to a TMCM"""
 
     def __init__(self, port, num_motors, num_banks, max_output,
                  max_velocity, max_coordinate, max_position,debug=False):
         self._port = port
         self._debug = debug
         self._ser = serial.Serial(port)
+        #self._ser.baudrate = 19200
         self.num_motors = num_motors
         self.num_banks = num_banks
         self.max_output = max_output
@@ -22,8 +23,10 @@ class Communication(object):
         self.max_position = max_position
 
     def _query(self, request):
-        """Encode and send a query. Recieve, decode, and return reply"""
+        """Encode and send a query. Receive, decode, and return reply"""
         req = codec.encodeRequestCommand(*request)
+        req = list(map(ord,req))
+        print(req)
         if self._debug:
             print("send to TMCL: ", codec.hexString(req), codec.decodeRequestCommand(req))
         self._ser.write(req)
