@@ -1,1 +1,2 @@
-__all__ = ['codec', 'consts', 'device', 'error']
+
+__all__ = ['codec', 'consts', 'communication', 'error']

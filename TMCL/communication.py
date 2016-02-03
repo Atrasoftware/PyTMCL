@@ -6,12 +6,11 @@ from .consts import *
 from .error import *
 
 
-class Device(object):
-    """Abstraction of a Device that understands TMCL via a serial port"""
+class Communication(object):
+    """Abstraction of a Communication handler that speak TMCL via serial port"""
 
-    def __init__(self, port="/dev/ttyUSB0", debug=False,
-                 num_motors=1, num_banks=4, max_output=(4, 3, 5),
-                 max_velocity=2048, max_coordinate=21, max_position=2**23):
+    def __init__(self, port, num_motors, num_banks, max_output,
+                 max_velocity, max_coordinate, max_position,debug=False):
         self._port = port
         self._debug = debug
         self._ser = serial.Serial(port)
