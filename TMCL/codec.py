@@ -94,8 +94,8 @@ def decodeCommand(cmd_string, keys):
     Do some checks on string length and checksum
     Fill dict with result according to keys
     """
-    #byte_array = bytearray(cmd_string) #Old version working only with 2.7
-    byte_array = [ord(i) for i in cmd_string]
+    byte_array = bytearray(cmd_string) #Old version working only with 2.7
+    #byte_array = [i for i in cmd_string]
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
@@ -113,6 +113,6 @@ def decodeCommand(cmd_string, keys):
 
 def hexString(cmd):
     """Convert encoded command string to human-readable string of hex values"""
-    #s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]#Old version (working with 2.7)
-    s = ['{:x}'.format(i).rjust(2) for i in [ord(i) for i in cmd]]
+    s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]#Old version (working with 2.7)
+    #s = ['{:x}'.format(i).rjust(2) for i in [ord(i) for i in cmd]]
     return  "[" + ", ".join(s) + "]"

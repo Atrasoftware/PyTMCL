@@ -30,12 +30,13 @@ class TMCLCommunicator(object):
         if self._debug:
             print("send to TMCL: ", codec.hexString(req), codec.decodeRequestCommand(req))
         self._ser.write(req)
-        rep = codec.decodeReplyCommand(self._ser.read(9))
+        resp = codec.decodeReplyCommand(self._ser.read(9))
         if self._debug:
-            tmp = rep.values()[:-1]
+            print(resp)
+            tmp = resp.values()[:-1]
             tmp = codec.encodeReplyCommand(*tmp)
-            print("got from TMCL:", codec.hexString(tmp), rep)
-        return rep['status'], rep['value']
+            print("got from TMCL:", codec.hexString(tmp), resp)
+        return resp['status'], resp['value']
 
     def _pn_checkrange(self, parameter_number, value, prefix):
         """Check if value is valid for given parameter_number"""
