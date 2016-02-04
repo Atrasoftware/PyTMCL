@@ -31,8 +31,8 @@ def encodeBytes(value, num_bytes=4):
     if value < 0:
         value += max_value
 
-    return [byte(int(value) >> i*8) for i in reversed(range(num_bytes))]
-
+    #return [byte(int(value) >> i*8) for i in reversed(range(num_bytes))]
+    return [byte(int(value) >> i*8) for i in reversed(list(range(num_bytes)))]
 
 def decodeBytes(bytes):
     """
@@ -73,8 +73,10 @@ def encodeCommand(parameters, value, debug=False):
     result = "".join([chr(b) for b in bytes])
 
     if debug:
-        cmd = decodeBytes(bytes, max_i=8)
-        print("{0:0>18X}".format(cmd), result) #http://www.python-course.eu/python3_formatted_output.php
+        #cmd = decodeBytes(bytes, max_i=8)
+        cmd = decodeBytes(bytes)
+        #print("{0:0>18X}".format(cmd), result) #http://www.python-course.eu/python3_formatted_output.php
+        print(("{0:0>18X}".format(cmd), result)) #http://www.python-course.eu/python3_formatted_output.php
     return result
 
 
@@ -94,8 +96,13 @@ def decodeCommand(cmd_string, keys):
     Do some checks on string length and checksum
     Fill dict with result according to keys
     """
-    byte_array = bytearray(cmd_string) #Old version working only with 2.7
-    #byte_array = [i for i in cmd_string]
+    #byte_array = bytearray(cmd_string) #Old version working only with 2.7
+    bytearray=None
+    if(type(cmd_string[0]) is str):
+        byte_array = [ord(i) for i in cmd_string]
+    elif(type(cmd_string[0]) is int):
+        byte_array = [i for i in cmd_string]
+
     if len(byte_array) != COMMAND_STRING_LENGTH:
         raise TMCLError("Command-string length ({} bytes) does not equal {} bytes".format(len(byte_array), COMMAND_STRING_LENGTH))
     if byte_array[8] != checksum(byte_array[:8]):
@@ -113,6 +120,12 @@ def decodeCommand(cmd_string, keys):
 
 def hexString(cmd):
     """Convert encoded command string to human-readable string of hex values"""
-    s = ['{:x}'.format(i).rjust(2) for i in list(bytearray(cmd))]#Old version (working with 2.7)
-    #s = ['{:x}'.format(i).rjust(2) for i in [ord(i) for i in cmd]]
+    temp = None
+    #Quickfix
+    if(type(cmd[0]) is str):
+        temp = [ord(i) for i in cmd]
+    elif(type(cmd[0]) is int):
+        temp = [i for i in cmd]
+
+    s = ['{:x}'.format(i).rjust(2) for i in temp]
     return  "[" + ", ".join(s) + "]"
