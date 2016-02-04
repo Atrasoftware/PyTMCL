@@ -151,12 +151,8 @@ class CodecTestCase(unittest.TestCase):
         for _ in range(MAXITER):
             values = self._gen_bytes(length=len(keys))
             string = encoder(*values)
-            #print("DIO PUTTANA\n\n")
-            #print(len(values))
-            #print(string)
             result = decoder(string)
-            #print("DIO PUTTANA")
-
+            
             for i, k in enumerate(keys):
                 self.assertEqual(values[i], result[k])
 
