@@ -34,7 +34,7 @@ class TMCLCommunicator(object):
         if self._debug:
             #tmp = resp.values()[:-1]
             tmp = list(resp.values())[:-1]
-            tmp = codec.encodeReplyCommand(*tmp,debug=True)
+            tmp = codec.encodeReplyCommand(*tmp)
             #print("got from TMCL:", codec.hexString(tmp), resp)
             print(("got from TMCL:", codec.hexString(tmp), resp))
         return resp['status'], resp['value']
