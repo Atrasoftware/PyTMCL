@@ -14,13 +14,27 @@ class TMCLCommunicator(object):
         self._port = port
         self._debug = debug
         self._ser = serial.Serial(port)
-        #self._ser.baudrate = 19200
+        #self._ser.baudrate = 9600
         self.num_motors = num_motors
         self.num_banks = num_banks
         self.max_output = max_output
         self.max_velocity = max_velocity
         self.max_coordinate = max_coordinate
         self.max_position = max_position
+
+    @classmethod
+    def fromdict(cls, port, specs, debug=False):
+        """
+        Initialize the communicator using the specifications from a dictionary
+        """
+        return cls(port,
+                specs['num_motors'],
+                specs['num_banks'],
+                specs['max_output'],
+                specs['max_velocity'],
+                specs['max_coordinate'],
+                specs['max_position'],
+                debug)
 
     def _query(self, request):
         """Encode and send a query. Receive, decode, and return reply"""
