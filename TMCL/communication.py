@@ -14,7 +14,7 @@ class TMCLCommunicator(object):
         self._port = port
         self._debug = debug
         self._ser = serial.Serial(port)
-        #self._ser.baudrate = 9600
+        self._ser.baudrate = 115200
         self.num_motors = num_motors
         self.num_banks = num_banks
         self.max_output = max_output
