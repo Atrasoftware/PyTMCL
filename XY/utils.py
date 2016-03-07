@@ -14,6 +14,9 @@ def threaded(fn):
 
 
 class Barrier:
+    """
+    A python 2.7 barrier implementation
+    """
     def __init__(self, n):
         self.n = n
         self.count = 0

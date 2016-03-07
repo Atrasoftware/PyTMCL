@@ -1,6 +1,6 @@
 from __future__ import division
 import sys
-sys.path.insert(0,'/root/PyTMCL')
+sys.path.insert(0,'../')
 
 import threading
 import time

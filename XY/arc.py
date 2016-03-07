@@ -2,7 +2,20 @@ from __future__ import division
 import numpy as np
 
 class Arc(object):
+    """
+    Define a 2D arc object and offer some tools in order to parametrize it.
+    """
     def __init__(self, C, P, theta):
+        """
+        Parameters
+        ----------
+        C : 2D tuple
+            Center coordinate.
+        P : 2D tuple
+            Starting point coordinate
+        theta: float
+            Angle in radians of the arc
+        """
         self.C = np.array(C)
         self.P = np.array(P)
         self.theta = theta
@@ -13,8 +26,17 @@ class Arc(object):
 
     def speed(self, t, w=None):
         """
-        t goes from 0 to 1
-        w is radiant / second
+        Parameters
+        ----------
+        t : float
+            Time parameter [0,1]
+        w : float
+            Pulse
+
+        Returns
+        -------
+        tuple
+            Returns a tuple with (vx,vy)
         """
         omega = self.theta
         if(w != None):
@@ -23,6 +45,19 @@ class Arc(object):
         return ( - self.r * np.sin(t * omega + self.angle) * omega , self.r * np.cos(t * omega + self.angle) * omega )
 
     def position(self, t, w=None):
+        """
+        Parameters
+        ----------
+        t : float
+            Time parameter [0,1]
+        w : float
+            Pulse
+
+        Returns
+        -------
+        tuple
+            Returns a tuple with (x,y) the "rendered position"
+        """
         omega = self.theta
         if(w != None):
             omega = w

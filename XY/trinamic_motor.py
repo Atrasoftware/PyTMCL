@@ -1,6 +1,6 @@
 from __future__ import division
 import sys
-sys.path.insert(0,'/root/PyTMCL')
+sys.path.insert(0,'../')
 
 import threading
 import time
@@ -10,10 +10,25 @@ from utils import *
 from TMCL import *
 
 class TrinamicMotor(object):
+    """
+    Model a trinamic motor enabled to read TMCL language.
+    Member variables are properties and are made in such a way is easy to update
+    a motor parameter
+
+    Missing:
+    A strong debug system and error checking.
+    """
     def __init__(self, interface, params, lock=None, debug=False):
         """
-        Initialize the motor
-        -   params: contains the operating ranges of the motor
+        Parameters
+        ----------
+        interface : Serial instance from PySerial (opened interface)
+        params : dict
+            A dictionary containing all the parameters of the motor
+        lock : Lock instance
+            A lock instance in order to avoid race conditions to Serial calls.
+        debug : bool
+            Enable disable debug
         """
         self.params = params
         self.debug = debug
