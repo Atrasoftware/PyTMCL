@@ -56,16 +56,12 @@ class TrinamicMotor(object):
         return cls(interface, params, lock, debug)
 
     def reset_motor_params(self):
+        self.stepdir_mode = self.params['step_direction_mode']
+        self.step_interpolation_enable = self.params['step_interpolation_enable']
         self.microstep_resolution = self.params['microstep_resolution']
         self.freewheeling_delay = self.params['freewheeling_delay']
         self.max_current = self.params['max_current']
         self.ramp_mode = self.params['ramp_mode']
-        self.max_acceleration = self.params['max_acceleration']
-        self.max_positioning_speed = self.params['max_positioning_speed']
-
-    def reset_posmode_params(self):
-        self.max_current = self.params['max_current']
-        self.ramp_mode = 0
         self.max_acceleration = self.params['max_acceleration']
         self.max_positioning_speed = self.params['max_positioning_speed']
 
@@ -96,6 +92,12 @@ class TrinamicMotor(object):
         """
         temp = 0
         wait_time = 0.01
+
+        #Disable step dir
+        self.stepdir_mode = 0
+        #disable interp
+        self.step_interpolation_enable = 0
+
         ##Velocity mode
         self.ramp_mode = 2
         ##Low max current
@@ -147,6 +149,8 @@ class TrinamicMotor(object):
         self.pos_ranges[1] = int(self.pos_ranges[1] / 2)
         self.pos_ranges[0] = -self.pos_ranges[1]
 
+        self.reset_motor_params()
+
 
 
 
@@ -164,9 +168,28 @@ class TrinamicMotor(object):
             self.query = self.interface.query
 
     lock = property(get_lock,set_lock)
+
+    ############################################################################
+    # Global parameters
+    ############################################################################
+
     ############################################################################
     # Motor Axis Parameters
     ############################################################################
+    #STEP/DIRECTION MODE
+    def get_stepdir_mode(self): return self.query((self.serial_addr,6,254,0,0))[1]
+
+    def set_stepdir_mode(self, value): self.query((self.serial_addr,5,254,0,value))
+
+    stepdir_mode = property(get_stepdir_mode,set_stepdir_mode)
+
+    #STEP INTERPOLATION ENABLE
+    def get_step_interpolation_enable(self): return self.query((self.serial_addr,6,160,0,0))[1]
+
+    def set_step_interpolation_enable(self, value): self.query((self.serial_addr,5,160,0,value))
+
+    step_interpolation_enable = property(get_step_interpolation_enable,set_step_interpolation_enable)
+
     #RAMP MODE
     def get_ramp_mode(self): return self.query((self.serial_addr,6,138,0,0))[1]
 

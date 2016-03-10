@@ -133,8 +133,8 @@ class XYSteward(object):
         speedy = speed * yratio
 
         #Set max speed and max acc for each motor
-        self.mx.reset_posmode_params()
-        self.my.reset_posmode_params()
+        self.mx.reset_motor_params()
+        self.my.reset_motor_params()
         #Max acc
         if(abs(speedx) > abs(speedy)):
             max_acc = self.mx.max_acceleration

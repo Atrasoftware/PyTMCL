@@ -9,6 +9,8 @@ motors_specs={
         "steps_per_rotation":200,
         "max_acceleration":2047,
         "max_positioning_speed":2047,
-        "direction":-1
+        "direction":-1, #Not implemented yed
+        "step_direction_mode":3,
+        "step_interpolation_enable":1
     }
 }
