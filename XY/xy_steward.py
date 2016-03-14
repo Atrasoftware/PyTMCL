@@ -32,6 +32,14 @@ class XYSteward(object):
         self.mx.home()
         self.my.home()
 
+    def stop(self):
+        """
+        send stop to all the motors
+        """
+        print("YOU CALLED STOP")
+        self.mx.stop()
+        self.my.stop()
+
     def speed_arc(self, C, theta, w):
         """
         Generate an from the actual position given
@@ -114,7 +122,6 @@ class XYSteward(object):
             self.moving = False
 
 
-
     def line(self, x, y, speed):
         """
         Move the plate to the cordinate x, y with speed=speed.
@@ -170,8 +177,26 @@ class XYSteward(object):
         while(not stop[0]):
             motor.next_position = pos[0]
 
+    def set_speed(self, axes, v):
+        print("YOU CALLED SET SPEED")
+        #Disable step dir
+        motor = None
+        if(axes == 1):
+            motor = self.my
+        elif(axes == 0):
+            motor = self.mx
+
+        motor.stepdir_mode = 0
+        #disable interp
+        motor.step_interpolation_enable = 0
+        #Set speed mode
+        motor.ramp_mode = 2
+
+        v = v * motor.params['max_positioning_speed']
+        motor.next_speed = v
+
     @threaded
-    def _follow_speed(self, motor, v, stop):
+    def _follow_speed(self, motor, v, stop=False):
         motor.reset_motor_params()
         #Set speed mode, maximum acceleration,
         motor.ramp_mode = 2

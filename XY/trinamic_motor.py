@@ -56,6 +56,8 @@ class TrinamicMotor(object):
         return cls(interface, params, lock, debug)
 
     def reset_motor_params(self):
+        self.next_speed = 0
+        self.next_position = self.actual_position
         self.stepdir_mode = self.params['step_direction_mode']
         self.step_interpolation_enable = self.params['step_interpolation_enable']
         self.microstep_resolution = self.params['microstep_resolution']
@@ -84,6 +86,13 @@ class TrinamicMotor(object):
         Convert the steps per seconds into the motor unit of speed
         """
         return int(ustepps/((16e6 / 65536) / (0x01 << self.pulse_divisor)))
+
+    @threaded
+    def stop(self):
+        self.stepdir_mode = 0
+        self.step_interpolation_enable = 0
+        self.query((self.serial_addr,3,0,0,0))
+        #self.reset_motor_params()
 
     @threaded
     def home(self):
