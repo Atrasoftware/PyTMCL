@@ -36,7 +36,6 @@ class XYSteward(object):
         """
         send stop to all the motors
         """
-        print("YOU CALLED STOP")
         self.mx.stop()
         self.my.stop()
 
@@ -92,7 +91,6 @@ class XYSteward(object):
             time.sleep(0.001)
             t = time.time() - mt
 
-
         stop[0] = True
 
     def lin2usteps(self, motor, rpmm, mm):
@@ -121,6 +119,12 @@ class XYSteward(object):
 
             self.moving = False
 
+    def reset_motors(self):
+        """
+        Push on the trinamic motor the default setup from the config file
+        """
+        self.mx.reset_motor_params()
+        self.my.reset_motor_params()
 
     def line(self, x, y, speed):
         """
@@ -178,19 +182,12 @@ class XYSteward(object):
             motor.next_position = pos[0]
 
     def set_speed(self, axes, v):
-        print("YOU CALLED SET SPEED")
         #Disable step dir
         motor = None
         if(axes == 1):
             motor = self.my
         elif(axes == 0):
             motor = self.mx
-
-        motor.stepdir_mode = 0
-        #disable interp
-        motor.step_interpolation_enable = 0
-        #Set speed mode
-        motor.ramp_mode = 2
 
         v = v * motor.params['max_positioning_speed']
         motor.next_speed = v

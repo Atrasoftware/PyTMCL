@@ -181,6 +181,19 @@ class TrinamicMotor(object):
     ############################################################################
     # Global parameters
     ############################################################################
+    #HOST ADDRESS
+    # def get_host_address(self): return self.query((self.serial_addr,10,76,0,0))[1]
+    #
+    # def set_host_address(self, value): self.query((self.serial_addr,9,76,0,value))
+    #
+    # host_address = property(get_host_address,set_host_address)
+
+    #SERIAL ADDRESS
+    # def get_serial_address(self): return self.query((self.serial_addr,10,66,0,0))[1]
+    #
+    # def set_serial_address(self, value): self.query((self.serial_addr,9,66,0,value))
+    #
+    # serial_address = property(get_serial_address,set_serial_address)
 
     ############################################################################
     # Motor Axis Parameters

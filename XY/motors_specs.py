@@ -4,7 +4,7 @@ motors_specs={
         "serial_addr":1,
         "ramp_mode":0,
         "max_current":255,
-        "microstep_resolution": 2,
+        "microstep_resolution": 3,
         "freewheeling_delay":0,
         "steps_per_rotation":200,
         "max_acceleration":100,

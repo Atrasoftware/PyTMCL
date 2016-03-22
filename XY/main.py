@@ -5,8 +5,8 @@ from motors_specs import *
 from xy_steward import *
 from ps3_joypad import *
 
-m1 = TrinamicMotor.from_new_interface("/dev/ttyACM0",motors_specs['TMCM-1161'])
-m2 = TrinamicMotor.from_new_interface("/dev/ttyACM1",motors_specs['TMCM-1161'])
+m1 = TrinamicMotor.from_new_interface("/dev/ttyACM1",motors_specs['TMCM-1161'])
+m2 = TrinamicMotor.from_new_interface("/dev/ttyACM0",motors_specs['TMCM-1161'])
 xy = XYSteward(m2,m1,12)
 
 js = PS3XYController("/dev/input/js0")
