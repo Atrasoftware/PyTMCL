@@ -1,9 +1,0 @@
-#!/usr/bin/python
-import time
-from TMCL import *
-
-
-motor = communication.TMCLCommunicator("/dev/ttyO4",1,4,(2),5000000,21,2**23,debug=True)
-
-motor._query((1,5,2,0,-100))
-#motor._query((2,5,2,0,0))
