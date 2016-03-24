@@ -25,12 +25,15 @@ class XYSteward(object):
         self.rpmm = 1/pitch
         self.moving = False
 
-    def homing(self):
+    def homing(self, blocking=True):
         """
         Search for the home position in x and y and store the two variables in member variables
         """
-        self.mx.home()
-        self.my.home()
+        threads=[self.mx.home(),self.my.home()]
+        #In order to block until home has finished
+        if(blocking):
+            for t in threads:
+                t.join()
 
     def stop(self):
         """

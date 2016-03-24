@@ -2,14 +2,14 @@ import time
 import threading
 from threading import Thread,Semaphore
 
-
 def threaded(fn):
     """
-    A simple decorator to implement threading
+    A simple decorator to implement threading.
     """
     def wrapper(*args, **kwargs):
         _thread = threading.Thread(target=fn, args=args, kwargs=kwargs)
         _thread.start()
+        return _thread
     return wrapper
 
 

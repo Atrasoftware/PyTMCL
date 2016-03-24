@@ -29,7 +29,6 @@ class PS3XYController(object):
         self.enabled = False
 
     def read_status(self):
-
         self.payload = unpack('IhBB', os.read(self.fd, 8))
 
     def start(self, callback_object, debug=False):
