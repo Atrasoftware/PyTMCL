@@ -198,7 +198,21 @@ class TrinamicMotor(object):
     ############################################################################
     # Motor Axis Parameters
     ############################################################################
-    #STEP/DIRECTION MODE
+    #ENCODER POSITION
+    def get_encoder_position(self): return self.query((self.serial_addr,6,209,0,0))[1]
+
+    def set_encoder_position(self, value): self.query((self.serial_addr,5,209,0,value))
+
+    encoder_position = property(get_encoder_position,set_encoder_position)
+
+    #ENCODER PRESCALER
+    def get_encoder_prescaler(self): return self.query((self.serial_addr,6,210,0,0))[1]
+
+    def set_encoder_prescaler(self, value): self.query((self.serial_addr,5,210,0,value))
+
+    encoder_prescaler = property(get_encoder_prescaler,set_encoder_prescaler)
+
+    #ENCODER POSITION
     def get_stepdir_mode(self): return self.query((self.serial_addr,6,254,0,0))[1]
 
     def set_stepdir_mode(self, value): self.query((self.serial_addr,5,254,0,value))
