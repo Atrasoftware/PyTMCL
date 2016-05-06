@@ -1,13 +1,11 @@
 from __future__ import division
-import sys
-sys.path.insert(0,'../')
 
 import threading
 import time
 import math as mt
 
-from utils import *
-from TMCL import *
+from .. TMCL import *
+from . utils import *
 
 class TrinamicMotor(object):
     """

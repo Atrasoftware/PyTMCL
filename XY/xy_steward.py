@@ -1,14 +1,12 @@
 from __future__ import division
-import sys
-sys.path.insert(0,'../')
 
 import threading
-import time
-from TMCL import *
-import trinamic_motor
 import math
-from utils import *
-from arc import *
+import time
+
+from .. TMCL import *
+from . utils import *
+from . arc import *
 
 class XYSteward(object):
     def __init__(self, motor1, motor2, pitch):
