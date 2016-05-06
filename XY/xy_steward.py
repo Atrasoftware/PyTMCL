@@ -193,7 +193,7 @@ class XYSteward(object):
             motor = self.mx
 
         v = v * motor.params['max_positioning_speed']
-        motor.next_speed = v
+        motor.next_speed = v * motor.direction
 
     @threaded
     def _follow_speed(self, motor, v, stop=False):

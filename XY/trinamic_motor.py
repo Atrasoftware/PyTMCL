@@ -63,6 +63,7 @@ class TrinamicMotor(object):
         self.microstep_resolution = self.params['microstep_resolution']
         self.freewheeling_delay = self.params['freewheeling_delay']
         self.max_current = self.params['max_current']
+        self.standby_current = self.params['standby_current']
         self.ramp_mode = self.params['ramp_mode']
         self.max_acceleration = self.params['max_acceleration']
         self.max_positioning_speed = self.params['max_positioning_speed']
@@ -239,6 +240,13 @@ class TrinamicMotor(object):
     def set_max_current(self, value): self.query((self.serial_addr,5,6,0,value))
 
     max_current = property(get_max_current, set_max_current)
+
+    #STADNBY CURRENT
+    def get_standby_current(self): return self.query((self.serial_addr,6,7,0,0))[1]
+
+    def set_standby_current(self, value): self.query((self.serial_addr,5,7,0,value))
+
+    standby_current = property(get_standby_current, set_standby_current)
 
     #NEXT SPEED
     def get_next_speed(self): return self.query((self.serial_addr,6,2,0,0))[1]
