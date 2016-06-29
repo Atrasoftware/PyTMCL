@@ -28,7 +28,9 @@ class TrinamicMotor(object):
         debug : bool
             Enable disable debug
         """
-        self.params = params
+        # Expect a dictionary (not nested, no references), do a shallow copy.
+        self.params = params.copy()
+
         self.debug = debug
         self.interface = interface
         self.query = self.interface.query
