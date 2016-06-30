@@ -57,7 +57,7 @@ class TrinamicMotor(object):
 
     def reset_motor_params(self):
         self.next_speed = 0
-        self.next_position = self.actual_position
+        #self.next_position = self.actual_position
         self.stepdir_mode = self.params['step_direction_mode']
         self.step_interpolation_enable = self.params['step_interpolation_enable']
         self.microstep_resolution = self.params['microstep_resolution']
