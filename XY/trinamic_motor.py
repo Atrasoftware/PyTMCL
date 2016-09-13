@@ -35,19 +35,20 @@ class TrinamicMotor(object):
         self.interface = interface
         self.query = self.interface.query
 
-        if(lock != None):
+        if(lock is not None):
             self.lock = lock
 
         self.serial_addr = params['serial_addr']
         self.spr = params['steps_per_rotation']
-        self.direction = params['direction'] #Not implemented yet
+        self.direction = params['direction']  # Not imlemented yet
 
         self.reset_motor_params()
 
-        self.pos_ranges = [None,None]
+        self.home_microstep_resolution = 4
 
     @classmethod
-    def from_new_interface(cls, dev, params, lock=None, baudrate=115200, debug=False):
+    def from_new_interface(cls, dev, params, lock=None,
+                           baudrate=115200, debug=False):
         """
         Set the interface from an already opened instance
         """
@@ -57,9 +58,9 @@ class TrinamicMotor(object):
 
     def reset_motor_params(self):
         self.next_speed = 0
-        #self.next_position = self.actual_position
         self.stepdir_mode = self.params['step_direction_mode']
-        self.step_interpolation_enable = self.params['step_interpolation_enable']
+        self.step_interpolation_enable = \
+            self.params['step_interpolation_enable']
         self.microstep_resolution = self.params['microstep_resolution']
         self.freewheeling_delay = self.params['freewheeling_delay']
         self.max_current = self.params['max_current']
@@ -92,104 +93,107 @@ class TrinamicMotor(object):
     def stop(self):
         self.stepdir_mode = 0
         self.step_interpolation_enable = 0
-        self.query((self.serial_addr,3,0,0,0))
-        #self.reset_motor_params()
+        self.query((self.serial_addr, 3, 0, 0, 0))
 
     @threaded
-    def home(self):
-        """
-        Searches for the home position (pos min and pos max)
-        """
-        temp = 0
-        wait_time = 0.01
+    def limit_checker(self, direction, stall_value=-30,
+                      encoder_dev=0, poll_time=0.01, speed=600):
 
-        #Disable step dir
+        self.next_speed = 0
+        self.next_position = 0
+        self.encoder_position = self.actual_position = 0
+
         self.stepdir_mode = 0
-        #disable interp
         self.step_interpolation_enable = 0
-
-        ##Velocity mode
         self.ramp_mode = 2
-        ##Low max current
-        self.max_current = 97
-        ##Set microstep resolution
-        home_microstep_resolution = 4
-        self.microstep_resolution = home_microstep_resolution
-        ##Set max acceleration
+        self.max_current = 120
+        self.microstep_resolution = self.home_microstep_resolution
+
+        self.encoder_prescaler = 1600
+
+        self.stop_on_stall = int(speed * 0.95)
+        self.stall_guard = stall_value
+        # steps per second
+        usteps_per_second = self.speed2ustepps(speed)
+        steps_per_poll = int(usteps_per_second * poll_time)
         self.max_acceleration = 2047
 
-        #Search the min value (negative speed)
-        self.next_speed = -150
+        self.max_encoder_deviation = encoder_dev
+        time.sleep(0.1)
+        if direction:
+            self.next_speed = speed
+        else:
+            self.next_speed = -speed
 
-        time.sleep(0.2)
-        while(self.load_value > 350):
-            time.sleep(wait_time)
-        self.next_speed = 0
-        self.actual_position = 0 #Set position to 0
-        temp = self.actual_position
-        self.pos_ranges[0] = temp
+        a = 0
+        while(not a):
+            a = self.error_flag
+            time.sleep(poll_time)
+            if a:
+                break
 
-        #Search max value
-        self.next_speed = 150
+        time.sleep(0.1)
+        self.limit = int(self.encoder_position *
+                         2**(self.microstep_resolution -
+                             self.home_microstep_resolution))
 
-        time.sleep(0.2)
-        while(self.load_value > 350):
-            time.sleep(wait_time)
-        self.next_speed = 0
-        temp = self.actual_position
-        self.pos_ranges[1] = temp
-
-        #Reset old params
-        self.microstep_resolution = self.params['microstep_resolution']
-        self.max_current = self.params['max_current']
-        self.ramp_mode = self.params['ramp_mode']
-        self.max_acceleration = self.params['max_acceleration']
-        self.max_positioning_speed = self.params['max_positioning_speed']
-
-        self.pos_ranges[1] = int(self.pos_ranges[1] * 2**(self.microstep_resolution - home_microstep_resolution))
-        self.next_position = self.actual_position - int(self.pos_ranges[1] / 2)
-        while(not self.position_reached):
-            time.sleep(wait_time)
-
-        self.max_positioning_speed = 0
-        self.actual_position = 0
-        self.next_position = 0
-        self.max_positioning_speed = self.params['max_positioning_speed']
-
-        self.pos_ranges[1] = int(self.pos_ranges[1] / 2)
-        self.pos_ranges[0] = -self.pos_ranges[1]
-
+        self.stop_on_stall = 2047
+        self.max_encoder_deviation = 0
         self.reset_motor_params()
 
+    @threaded
+    def move_to(self, usteps, speed, relative=True):
+        self.stepdir_mode = 0
+        self.ramp_mode = 0
+        self.max_positioning_speed = speed
+        self.move_to_position(usteps, relative=relative)
+        while(not self.position_reached):
+            time.sleep(0.1)
+        print("ok")
+        self.ramp_mode = 2
+        self.reset_motor_params()
 
+    def home(self):
+        """
+        Automatically searches for the home position (pos min and pos max)
+        """
+        l1 = self.limit_checker(0)
+        l1.join()
+        l2 = self.limit_checker(1)
+        l2.join()
 
+        self.stepdir_mode = 0
+        self.ramp_mode = 2
 
-    ############################################################################
-    # Class Handling
-    ############################################################################
+        self.next_position = self.actual_position - int(self.limit / 2)
+        while(not self.position_reached):
+            time.sleep(0.1)
+
+        self.limit = int(self.limit / 2)
+
     def get_lock(self): return self._lock
 
     def set_lock(self, value):
-        if(value != None ):
+        if(value is not None):
             self._lock = value
             self.query = self.locked_query
         else:
             self._lock = None
             self.query = self.interface.query
 
-    lock = property(get_lock,set_lock)
+    lock = property(get_lock, set_lock)
 
     ############################################################################
     # Global parameters
     ############################################################################
-    #HOST ADDRESS
+    # HOST ADDRESS
     # def get_host_address(self): return self.query((self.serial_addr,10,76,0,0))[1]
     #
     # def set_host_address(self, value): self.query((self.serial_addr,9,76,0,value))
     #
     # host_address = property(get_host_address,set_host_address)
 
-    #SERIAL ADDRESS
+    # SERIAL ADDRESS
     # def get_serial_address(self): return self.query((self.serial_addr,10,66,0,0))[1]
     #
     # def set_serial_address(self, value): self.query((self.serial_addr,9,66,0,value))
@@ -199,6 +203,47 @@ class TrinamicMotor(object):
     ############################################################################
     # Motor Axis Parameters
     ############################################################################
+
+    def move_to_position(self, usteps, relative=True):
+        absolute = 0 if not relative else 1
+        return self.query((self.serial_addr, 4, absolute, 0, usteps))[1]
+
+    # ERROR FLAGS
+    def get_error_flag(self):
+        return self.query((self.serial_addr, 6, 207, 0, 0))[1]
+
+    def set_error_flag(self, value): pass
+
+    error_flag = property(get_error_flag, set_error_flag)
+
+    # STOP ON STALL
+    def get_stop_on_stall(self):
+        return self.query((self.serial_addr, 6, 181, 0, 0))[1]
+
+    def set_stop_on_stall(self, value):
+        self.query((self.serial_addr, 5, 181, 0, value))
+
+    stop_on_stall = property(get_stop_on_stall, set_stop_on_stall)
+
+    # STALL GUARD
+    def get_stall_guard(self):
+        return self.query((self.serial_addr, 6, 174, 0, 0))[1]
+
+    def set_stall_guard(self, value):
+        self.query((self.serial_addr, 5, 174, 0, value))
+
+    stall_guard = property(get_stall_guard, set_stall_guard)
+
+    # MAX ENCODER DEVIATION
+    def get_max_encoder_deviation(self):
+        return self.query((self.serial_addr, 6, 212, 0, 0))[1]
+
+    def set_max_encoder_deviation(self, value):
+        self.query((self.serial_addr, 5, 212, 0, value))
+
+    max_encoder_deviation = property(get_max_encoder_deviation,
+                                     set_max_encoder_deviation)
+
     #ENCODER POSITION
     def get_encoder_position(self): return self.query((self.serial_addr,6,209,0,0))[1]
 

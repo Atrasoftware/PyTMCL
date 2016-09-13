@@ -1,5 +1,5 @@
 from __future__ import division
-import numpy as np
+import math as np
 
 class Arc(object):
     """
